@@ -1,0 +1,26 @@
+name: Security Scan
+
+on:
+  schedule:
+    - cron: "0 3 * * 1"  # weekly, Monday 03:00 UTC
+  workflow_dispatch: {}
+
+jobs:
+  dependency-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Python dependency audit
+        run: pip install pip-audit && pip-audit -r backend/requirements.txt || true
+
+      - name: npm audit
+        working-directory: frontend
+        run: npm install && npm audit --audit-level=high || true
+
+      - name: Trivy container scan (backend)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: backend
+          severity: CRITICAL,HIGH

@@ -1,0 +1,30 @@
+# Production overrides: no bind-mounted source, restart policies, resource limits.
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    image: disaster-relief/backend:latest
+    restart: unless-stopped
+    deploy:
+      replicas: 3
+      resources:
+        limits: { cpus: "1.5", memory: 2G }
+    volumes: []  # source not mounted in prod — image is immutable
+
+  frontend:
+    image: disaster-relief/frontend:latest
+    restart: unless-stopped
+    deploy:
+      replicas: 2
+
+  celery-worker:
+    restart: unless-stopped
+    deploy:
+      replicas: 2
+
+  mongo:
+    restart: unless-stopped
+
+  redis:
+    restart: unless-stopped

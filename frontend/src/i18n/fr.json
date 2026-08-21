@@ -1,0 +1,12 @@
+{
+  "app.title": "Plateforme d'Aide et de Secours aux Sinistrés IA",
+  "nav.dashboard": "Tableau de Bord",
+  "nav.report": "Signaler un Incident",
+  "nav.shelters": "Carte des Abris",
+  "nav.chat": "Assistant IA",
+  "action.submit_report": "Envoyer le Rapport d'Urgence",
+  "severity.low": "Faible",
+  "severity.moderate": "Modéré",
+  "severity.high": "Élevé",
+  "severity.critical": "Critique"
+}

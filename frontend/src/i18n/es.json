@@ -1,0 +1,12 @@
+{
+  "app.title": "Plataforma de Ayuda y Rescate ante Desastres con IA",
+  "nav.dashboard": "Panel",
+  "nav.report": "Reportar Incidente",
+  "nav.shelters": "Mapa de Refugios",
+  "nav.chat": "Asistente IA",
+  "action.submit_report": "Enviar Reporte de Emergencia",
+  "severity.low": "Bajo",
+  "severity.moderate": "Moderado",
+  "severity.high": "Alto",
+  "severity.critical": "Crítico"
+}

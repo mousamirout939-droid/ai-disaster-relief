@@ -1,0 +1,78 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    ports: ["8000:8000"]
+    env_file: .env
+    depends_on: [mongo, redis]
+    volumes:
+      - ./backend:/app
+      - uploads_data:/data/uploads
+    networks: [relief-net]
+
+  frontend:
+    build: ./frontend
+    ports: ["5173:80"]
+    depends_on: [backend]
+    networks: [relief-net]
+
+  mongo:
+    image: mongo:7
+    ports: ["27017:27017"]
+    volumes:
+      - mongo_data:/data/db
+      - ./infra/docker/mongo/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    networks: [relief-net]
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+    volumes: [redis_data:/data]
+    networks: [relief-net]
+
+  celery-worker:
+    build: ./backend
+    command: celery -A app.tasks.celery_app worker --loglevel=info
+    env_file: .env
+    depends_on: [redis, mongo]
+    networks: [relief-net]
+
+  celery-beat:
+    build: ./backend
+    command: celery -A app.tasks.celery_app beat --loglevel=info
+    env_file: .env
+    depends_on: [redis, mongo]
+    networks: [relief-net]
+
+  nginx:
+    build: ./infra/docker/nginx
+    ports: ["80:80"]
+    depends_on: [backend, frontend]
+    networks: [relief-net]
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports: ["9090:9090"]
+    volumes:
+      - ./infra/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks: [relief-net]
+
+  grafana:
+    image: grafana/grafana:latest
+    ports: ["3000:3000"]
+    volumes:
+      - ./infra/monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana_data:/var/lib/grafana
+    depends_on: [prometheus]
+    networks: [relief-net]
+
+networks:
+  relief-net:
+    driver: bridge
+
+volumes:
+  mongo_data:
+  redis_data:
+  uploads_data:
+  grafana_data:

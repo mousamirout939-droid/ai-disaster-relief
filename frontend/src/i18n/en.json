@@ -1,0 +1,12 @@
+{
+  "app.title": "AI Disaster Relief & Rescue Platform",
+  "nav.dashboard": "Dashboard",
+  "nav.report": "Report Incident",
+  "nav.shelters": "Shelter Map",
+  "nav.chat": "AI Assistant",
+  "action.submit_report": "Submit Emergency Report",
+  "severity.low": "Low",
+  "severity.moderate": "Moderate",
+  "severity.high": "High",
+  "severity.critical": "Critical"
+}

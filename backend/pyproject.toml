@@ -1,0 +1,17 @@
+[project]
+name = "ai-disaster-relief-platform-backend"
+version = "1.0.0"
+description = "FastAPI backend for the AI Disaster Relief & Rescue Platform"
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+
+[tool.black]
+line-length = 110
+target-version = ["py312"]
