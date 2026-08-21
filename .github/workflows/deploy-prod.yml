@@ -1,53 +1,32 @@
-name: Deploy to Production
-
-on:
-  push:
-    branches: [main]
-
-jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build & push backend image
-        uses: docker/build-push-action@v6
-        with:
-          context: ./backend
-          push: true
-          tags: ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
-
-      - name: Stage nginx config for frontend build
-        run: cp infra/docker/nginx/nginx.conf frontend/nginx.conf
-
-      - name: Build & push frontend image
-        uses: docker/build-push-action@v6
-        with:
-          context: ./frontend
-          push: true
-          tags: ghcr.io/${{ github.repository }}/frontend:${{ github.sha }}
-
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Configure kubeconfig
-        run: echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > kubeconfig
+        run: |
+          set -euo pipefail
+          if [ -z "${{ secrets.KUBE_CONFIG }}" ]; then
+            echo "::error::KUBE_CONFIG secret is empty or not set"
+            exit 1
+          fi
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > "$GITHUB_WORKSPACE/kubeconfig"
+          if [ ! -s "$GITHUB_WORKSPACE/kubeconfig" ]; then
+            echo "::error::Decoded kubeconfig is empty — check that KUBE_CONFIG secret is valid base64"
+            exit 1
+          fi
+
+      - name: Verify cluster connectivity
+        env:
+          KUBECONFIG: ${{ github.workspace }}/kubeconfig
+        run: kubectl cluster-info
+
       - name: Rollout new images
         env:
-          KUBECONFIG: kubeconfig
+          KUBECONFIG: ${{ github.workspace }}/kubeconfig
         run: |
           kubectl set image deployment/backend backend=ghcr.io/${{ github.repository }}/backend:${{ github.sha }} -n disaster-relief
           kubectl set image deployment/frontend frontend=ghcr.io/${{ github.repository }}/frontend:${{ github.sha }} -n disaster-relief
           kubectl rollout status deployment/backend -n disaster-relief
+          kubectl rollout status deployment/frontend -n disaster-relief

@@ -12,6 +12,12 @@ testpaths = ["tests"]
 line-length = 110
 target-version = "py312"
 
+[tool.ruff.lint]
+ignore = [
+    "UP045", # Allow Optional[...] instead of requiring X | None
+    "B008",  # Allow FastAPI Depends in function defaults
+]
+
 [tool.black]
 line-length = 110
 target-version = ["py312"]
