@@ -27,11 +27,13 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
 
+      - name: Stage nginx config for frontend build
+        run: cp infra/docker/nginx/nginx.conf frontend/nginx.conf
+
       - name: Build & push frontend image
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: ./frontend/Dockerfile
+          context: ./frontend
           push: true
           tags: ghcr.io/${{ github.repository }}/frontend:${{ github.sha }}
 
