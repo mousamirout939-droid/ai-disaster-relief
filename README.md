@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # AI Disaster Relief & Rescue Platform
 
 A production-grade, AI-powered platform for real-time disaster reporting, shelter/resource
@@ -49,3 +50,6 @@ docs/       Architecture, API, RBAC, and deployment documentation
 ## License
 
 MIT — see `LICENSE`.
+=======
+# ai-disaster-relief
+>>>>>>> 58b383bd03d6604a7eece5c2247f2066e063c280
