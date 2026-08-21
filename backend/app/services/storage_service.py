@@ -4,11 +4,11 @@ fallback for development. Keeps upload/inference-path logic out of route
 handlers and services that just need "give me a URL" / "give me a local path".
 """
 import logging
-import os
 import uuid
 from pathlib import Path
 
 import aioboto3
+import anyio
 
 from app.core.config import settings
 
@@ -59,6 +59,5 @@ class StorageService:
         ) as s3:
             obj = await s3.get_object(Bucket=settings.S3_BUCKET_NAME, Key=key)
             body = await obj["Body"].read()
-        with open(tmp_path, "wb") as f:
-            f.write(body)
+        await anyio.Path(tmp_path).write_bytes(body)
         return tmp_path

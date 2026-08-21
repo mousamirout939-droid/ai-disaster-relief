@@ -11,7 +11,7 @@ def send_sms_notification(self, phone_number: str, message: str):
     try:
         logger.info("Sending SMS to %s", phone_number)
         # Integration point: Twilio / SNS client call goes here.
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 -- retry on any failure by design
         raise self.retry(exc=exc)
 
 

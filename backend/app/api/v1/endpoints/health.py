@@ -1,8 +1,12 @@
+import logging
+
 from fastapi import APIRouter, Depends
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.core.database import get_database
 from app.core.redis_client import redis_client
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["Health"])
 
@@ -19,11 +23,11 @@ async def readiness_check(db: AsyncIOMotorDatabase = Depends(get_database)):
         await db.command("ping")
         checks["mongodb"] = True
     except Exception:
-        pass
+        logger.warning("MongoDB health check failed", exc_info=True)
     try:
         await redis_client.ping()
         checks["redis"] = True
     except Exception:
-        pass
+        logger.warning("Redis health check failed", exc_info=True)
     healthy = all(checks.values())
     return {"status": "ready" if healthy else "degraded", "checks": checks}
