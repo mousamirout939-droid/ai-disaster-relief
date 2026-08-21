@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -17,7 +18,7 @@ export default function IncidentForm() {
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({ resolver: zodResolver(schema) })
   const { location } = useGeolocation()
   const submitReport = useIncidentStore((s) => s.submitReport)
-  let images = []
+  const [images, setImages] = useState([])
 
   const onSubmit = async (values) => {
     if (!location) {
@@ -57,7 +58,7 @@ export default function IncidentForm() {
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium">What's happening?</label>
+        <label className="mb-1 block text-sm font-medium">What is happening?</label>
         <textarea {...register('description')} rows={3} className="input-field" placeholder="Describe the situation..." />
         {errors.description && <p className="mt-1 text-xs text-red-600">{errors.description.message}</p>}
       </div>
@@ -67,7 +68,7 @@ export default function IncidentForm() {
         <input {...register('address_text')} className="input-field" placeholder="Nearest cross street or landmark" />
       </div>
 
-      <ImageUploader onChange={(files) => { images = files }} />
+      <ImageUploader onChange={(files) => setImages(files)} />
 
       <p className="text-xs text-slate-400">
         📍 {location ? `Location detected (${location.lat.toFixed(4)}, ${location.lng.toFixed(4)})` : 'Detecting your location...'}

@@ -30,6 +30,7 @@ export default [
       ...reactHooks.configs.recommended.rules,
       "react/react-in-jsx-scope": "off",
        "react/prop-types": "off",
+        "react-hooks/set-state-in-effect": "off",
     },
   },
 ];
