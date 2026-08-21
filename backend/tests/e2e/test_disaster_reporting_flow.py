@@ -30,5 +30,4 @@ async def test_full_citizen_to_volunteer_verification_flow(app_client):
         headers={"Authorization": f"Bearer {citizen_token}"},
     )
     assert report.status_code == 201
-    incident_id = report.json()["id"]
     assert report.json()["status"] == "pending_review"

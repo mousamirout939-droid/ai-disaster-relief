@@ -1,4 +1,5 @@
 import pytest
+from fastapi import HTTPException
 
 from app.core.security import hash_password, verify_password
 from app.repositories.user_repository import UserRepository
@@ -28,5 +29,5 @@ async def test_register_duplicate_email_raises(mock_db):
     repo = UserRepository(mock_db)
     service = AuthService(repo)
     await service.register("Jane Doe", "dupe@example.com", "SuperSecret123", None)
-    with pytest.raises(Exception):
+    with pytest.raises(HTTPException):
         await service.register("Jane Doe 2", "dupe@example.com", "SuperSecret123", None)

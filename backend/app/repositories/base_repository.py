@@ -12,7 +12,7 @@ from pydantic import BaseModel
 ModelT = TypeVar("ModelT", bound=BaseModel)
 
 
-class BaseRepository(Generic[ModelT]):
+class BaseRepository(Generic[ModelT]):  # noqa: UP046 -- keep Generic for broader Python version support
     collection_name: str
     model_cls: type[ModelT]
 
