@@ -2,7 +2,6 @@ FROM node:20-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm install
-COPY infra/docker/nginx/nginx.conf /etc/nginx/conf.d/default.conf
 RUN npm run build
 
 FROM nginx:1.27-alpine
