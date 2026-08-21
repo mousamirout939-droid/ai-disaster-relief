@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import clsx from 'clsx'
 import { useAlertStore } from '../../store/useAlertStore.js'
 import { useWebSocket } from '../../hooks/useWebSocket.js'

@@ -28,7 +28,8 @@ export default [
     rules: {
       ...react.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
-      "react/react-in-jsx-scope": "off", // not needed if using React 17+ new JSX transform
+      "react/react-in-jsx-scope": "off",
+       "react/prop-types": "off",
     },
   },
 ];
