@@ -9,7 +9,7 @@ from app.ml.preprocess import normalize_image, validate_image_bytes
 from app.repositories.audit_repository import AuditRepository
 from app.repositories.incident_repository import IncidentRepository
 from app.schemas.common import PaginatedResponse
-from app.schemas.incident import IncidentCreateRequest, IncidentResponse, IncidentVerifyRequest
+from app.schemas.incident import IncidentResponse, IncidentVerifyRequest
 from app.schemas.user import UserInDB
 from app.services.audit_service import AuditService
 from app.services.incident_service import IncidentService
