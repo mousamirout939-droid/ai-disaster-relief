@@ -1,7 +1,6 @@
-import pytest
 
-from app.models.incident import IncidentCategory, IncidentSeverity
 from app.ml.severity_classifier import refine_severity
+from app.models.incident import IncidentCategory, IncidentSeverity
 
 
 def test_refine_severity_escalates_with_corroboration():

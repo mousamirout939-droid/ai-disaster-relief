@@ -2,7 +2,7 @@
 Cryptographic and authentication primitives: password hashing (Argon2/bcrypt
 via passlib), JWT access/refresh token issuance and verification.
 """
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import StrEnum
 from typing import Any, Optional
 
@@ -41,7 +41,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def _create_token(subject: str, role: str, token_type: TokenType, expires_delta: timedelta) -> str:
     import uuid
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     payload = {
         "sub": subject,
         "role": role,

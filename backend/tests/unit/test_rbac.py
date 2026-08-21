@@ -1,5 +1,3 @@
-import pytest
-from fastapi import HTTPException
 
 from app.dependencies.rbac import ROLE_HIERARCHY, Role
 

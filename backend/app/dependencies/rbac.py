@@ -11,8 +11,8 @@ RBAC matrix (summarized — see docs/RBAC_MATRIX.md for full detail):
   volunteer  -> citizen perms + verify incidents, update shelter inventory
   admin      -> full CRUD on users/incidents/shelters, broadcast alerts, audit log access
 """
+from collections.abc import Callable
 from enum import StrEnum
-from typing import Callable, Iterable
 
 from fastapi import Depends, HTTPException, status
 

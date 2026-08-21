@@ -2,12 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.core.database import get_database
-from app.dependencies.auth import get_current_active_user
 from app.dependencies.rbac import require_roles
+from app.models.shelter import ShelterDocument
 from app.repositories.shelter_repository import ShelterRepository
 from app.schemas.shelter import ShelterCreateRequest, ShelterResponse, ShelterUpdateRequest
 from app.schemas.user import UserInDB
-from app.models.shelter import ShelterDocument
 
 router = APIRouter(prefix="/shelters", tags=["Shelters"])
 

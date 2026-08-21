@@ -49,7 +49,7 @@ class ConnectionManager:
         for ws in targets:
             try:
                 await ws.send_json(payload)
-            except Exception:
+            except Exception:  # noqa: BLE001 -- any send failure means drop the connection
                 logger.warning("Failed to deliver websocket message, dropping connection.")
 
     async def start_redis_listener(self) -> None:

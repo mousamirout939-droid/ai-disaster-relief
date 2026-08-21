@@ -6,8 +6,8 @@ incidents API endpoints — kept separate from the route handlers so the
 same logic can be reused by background tasks / websocket handlers.
 """
 import logging
+from datetime import UTC
 
-from app.core.config import settings
 from app.ml.yolo_inference import analyze_image_severity
 from app.models.incident import (
     AISeverityAnalysis,
@@ -89,7 +89,7 @@ class IncidentService:
         return saved
 
     async def verify_incident(self, incident_id: str, verifier_id: str, approve: bool) -> IncidentDocument | None:
-        from datetime import datetime, timezone
+        from datetime import datetime
 
         new_status = IncidentStatus.VERIFIED if approve else IncidentStatus.REJECTED
         return await self.repo.update(
@@ -97,7 +97,7 @@ class IncidentService:
             {
                 "status": new_status.value,
                 "verified_by": verifier_id,
-                "verified_at": datetime.now(timezone.utc).isoformat(),
+                "verified_at": datetime.now(UTC).isoformat(),
             },
         )
 

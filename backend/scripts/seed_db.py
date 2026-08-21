@@ -5,7 +5,6 @@ import random
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from app.core.config import settings
-from app.core.security import hash_password
 
 SAMPLE_CITIES = [
     {"name": "San Francisco", "lon": -122.4194, "lat": 37.7749},

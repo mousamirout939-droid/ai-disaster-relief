@@ -2,7 +2,7 @@
 Generic repository pattern over a Motor collection. Domain-specific
 repositories inherit this to avoid re-implementing basic CRUD + pagination.
 """
-from typing import Any, Generic, Type, TypeVar
+from typing import Any, Generic, TypeVar
 
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -14,7 +14,7 @@ ModelT = TypeVar("ModelT", bound=BaseModel)
 
 class BaseRepository(Generic[ModelT]):
     collection_name: str
-    model_cls: Type[ModelT]
+    model_cls: type[ModelT]
 
     def __init__(self, db: AsyncIOMotorDatabase):
         self.db = db

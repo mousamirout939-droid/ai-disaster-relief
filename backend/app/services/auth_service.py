@@ -3,7 +3,7 @@ Authentication service: registration, login with brute-force lockout,
 token refresh, and password reset flows.
 """
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime
 
 from fastapi import HTTPException, status
 
@@ -78,5 +78,5 @@ class AuthService:
         return create_access_token(payload.sub, payload.role)
 
     async def logout(self, jti: str, exp: int) -> None:
-        ttl = max(exp - int(datetime.now(timezone.utc).timestamp()), 1)
+        ttl = max(exp - int(datetime.now(UTC).timestamp()), 1)
         await redis_client.set(f"blocklist:jti:{jti}", "1", ex=ttl)

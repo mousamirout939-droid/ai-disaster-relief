@@ -1,11 +1,11 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 
 def utcnow_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def is_expired(expires_at_iso: str | None) -> bool:
     if not expires_at_iso:
         return False
-    return datetime.fromisoformat(expires_at_iso) < datetime.now(timezone.utc)
+    return datetime.fromisoformat(expires_at_iso) < datetime.now(UTC)

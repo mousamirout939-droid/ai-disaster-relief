@@ -2,7 +2,7 @@
 Shared base types for MongoDB-backed domain models: ObjectId <-> str
 coercion, GeoJSON Point representation, and timestamp mixins.
 """
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Annotated, Any
 
 from bson import ObjectId
@@ -12,7 +12,7 @@ PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
 def utcnow() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 class GeoPoint(BaseModel):
