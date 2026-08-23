@@ -16,6 +16,7 @@ jobs:
     env:
       SECRET_KEY: test-secret-key-for-ci-only
       MONGODB_URI: mongodb://localhost:27017/test_db
+      USE_REAL_MONGO: "1"
     services:
       redis:
         image: redis:7
