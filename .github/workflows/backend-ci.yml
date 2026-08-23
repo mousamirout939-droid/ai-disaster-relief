@@ -12,6 +12,9 @@ jobs:
     defaults:
       run:
         working-directory: backend
+    env:
+      SECRET_KEY: test-secret-key-for-ci-only
+      MONGODB_URI: mongodb://localhost:27017/test_db
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
