@@ -26,6 +26,7 @@ async def mock_db():
         # enforces this; mongomock doesn't support $geoNear at all, which is
         # why this only matters when USE_REAL_MONGO=1.
         await db["incidents"].create_index([("location", "2dsphere")])
+        await db["shelters"].create_index([("location", "2dsphere")])
 
         yield db
         await client.drop_database(TEST_DB_NAME)
