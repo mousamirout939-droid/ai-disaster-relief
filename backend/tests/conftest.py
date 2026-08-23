@@ -1,13 +1,14 @@
 """Shared pytest fixtures: mocked or real MongoDB, test client, auth headers."""
 import os
+from datetime import UTC, datetime
 
-import pytest
 import pytest_asyncio
+from bson import ObjectId
 from httpx import ASGITransport, AsyncClient
 from mongomock_motor import AsyncMongoMockClient
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from app.core.security import create_access_token
+from app.core.security import create_access_token, hash_password
 
 USE_REAL_MONGO = os.getenv("USE_REAL_MONGO") == "1"
 TEST_DB_NAME = "test_disaster_relief_db"
@@ -67,21 +68,55 @@ async def app_client(mock_db, monkeypatch):
         yield client
 
 
-@pytest.fixture
-def citizen_token():
-    return create_access_token("507f1f77bcf86cd799439011", "citizen")
+async def _create_user_and_token(mock_db, role: str) -> str:
+    """
+    Insert a real UserDocument-shaped record into the test database and
+    return a valid access token for it. get_current_user looks up the user
+    by ID via UserRepository.get_by_id, so a token for a nonexistent user
+    always fails auth with 401 before any role check ever runs - the token
+    alone isn't enough, the user has to actually exist in the DB.
+    """
+    user_id = ObjectId()
+    now = datetime.now(UTC)
+    doc = {
+        "_id": user_id,
+        "full_name": f"Test {role.title()}",
+        "email": f"{role}@example.com",
+        "phone": None,
+        "hashed_password": hash_password("SuperSecret123"),
+        "role": role,
+        "is_active": True,
+        "is_suspended": False,
+        "is_email_verified": True,
+        "preferred_language": "en",
+        "last_known_location": None,
+        "volunteer_verified": role == "volunteer",
+        "organization": None,
+        "notification_preferences": {"sms": True, "push": True, "email": True},
+        "failed_login_attempts": 0,
+        "locked_until": None,
+        "created_at": now,
+        "updated_at": now,
+    }
+    await mock_db["users"].insert_one(doc)
+    return create_access_token(str(user_id), role)
 
 
-@pytest.fixture
-def volunteer_token():
-    return create_access_token("507f1f77bcf86cd799439012", "volunteer")
+@pytest_asyncio.fixture
+async def citizen_token(mock_db):
+    return await _create_user_and_token(mock_db, "citizen")
 
 
-@pytest.fixture
-def admin_token():
-    return create_access_token("507f1f77bcf86cd799439013", "admin")
+@pytest_asyncio.fixture
+async def volunteer_token(mock_db):
+    return await _create_user_and_token(mock_db, "volunteer")
 
 
-@pytest.fixture
-def auth_headers(citizen_token):
+@pytest_asyncio.fixture
+async def admin_token(mock_db):
+    return await _create_user_and_token(mock_db, "admin")
+
+
+@pytest_asyncio.fixture
+async def auth_headers(citizen_token):
     return {"Authorization": f"Bearer {citizen_token}"}
