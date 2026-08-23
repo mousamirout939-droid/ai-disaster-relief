@@ -60,7 +60,7 @@ async def report_incident(
         image_filenames=filenames,
         address_text=address_text,
     )
-    return IncidentResponse(**incident.model_dump(by_alias=True))
+    return IncidentResponse(**incident.model_dump())
 
 
 @router.get("/nearby", response_model=list[IncidentResponse])
@@ -73,7 +73,7 @@ async def get_nearby_incidents(
     service: IncidentService = Depends(get_incident_service),
 ):
     incidents = await service.get_nearby(longitude, latitude, radius_km, status_filter)
-    return [IncidentResponse(**i.model_dump(by_alias=True)) for i in incidents]
+    return [IncidentResponse(**i.model_dump()) for i in incidents]
 
 
 @router.get("", response_model=PaginatedResponse)
@@ -86,7 +86,7 @@ async def list_incidents(
     query = {"status": status_filter} if status_filter else {}
     items, total = await repo.paginate(query, page, page_size, sort=[("created_at", -1)])
     return PaginatedResponse.build(
-        [IncidentResponse(**i.model_dump(by_alias=True)) for i in items], total, page, page_size
+        [IncidentResponse(**i.model_dump()) for i in items], total, page, page_size
     )
 
 
@@ -109,4 +109,4 @@ async def verify_incident(
         resource_id=incident_id,
         metadata={"notes": payload.notes},
     )
-    return IncidentResponse(**incident.model_dump(by_alias=True))
+    return IncidentResponse(**incident.model_dump())
