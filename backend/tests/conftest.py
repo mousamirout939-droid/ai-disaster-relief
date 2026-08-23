@@ -37,16 +37,21 @@ async def mock_db():
 @pytest_asyncio.fixture(autouse=True)
 async def reset_redis_pool():
     """
-    The Redis client in app.core.redis_client is a module-level singleton
-    whose connection pool binds to whatever event loop is active when it's
-    first used. If pytest-asyncio ever runs tests on separate event loops,
-    stale connections from a previous loop cause 'RuntimeError: Event loop
-    is closed'. Disconnecting here forces a fresh connection on the loop
-    that is actually running for this test.
+    app.core.redis_client is a module-level singleton whose connection pool
+    binds to whatever event loop is running when it's first used. With
+    pytest-asyncio's default function-scoped loops, each test gets a fresh
+    loop, so connections from a previous test reference an already-closed
+    loop. Gracefully closing them (pool.disconnect()) fails because it tries
+    to touch that dead loop. Since the old loop and its sockets are already
+    gone, we just drop the stale references directly instead of trying to
+    close them - the pool then transparently opens fresh connections on the
+    current test's loop on next use.
     """
     from app.core.redis_client import redis_client
 
-    await redis_client.connection_pool.disconnect(inuse_connections=True)
+    pool = redis_client.connection_pool
+    pool._available_connections.clear()
+    pool._in_use_connections.clear()
     yield
 
 
