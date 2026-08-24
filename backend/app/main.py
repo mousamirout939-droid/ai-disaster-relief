@@ -53,7 +53,13 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# --- Middleware stack (order matters: outermost first) ---
+# --- Middleware stack ---
+# NOTE: Starlette applies middleware in REVERSE order of registration
+# (last added = outermost = runs first). CORSMiddleware must be added
+# LAST so it wraps everything else and can respond to preflight OPTIONS
+# requests before they hit rate limiting or context middleware.
+app.add_middleware(RequestContextMiddleware)
+app.add_middleware(RateLimitMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[str(origin) for origin in settings.BACKEND_CORS_ORIGINS] or ["*"],
@@ -61,8 +67,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.add_middleware(RateLimitMiddleware)
-app.add_middleware(RequestContextMiddleware)
 
 register_exception_handlers(app)
 
