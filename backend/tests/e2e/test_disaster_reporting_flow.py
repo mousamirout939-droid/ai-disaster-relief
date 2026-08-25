@@ -21,7 +21,7 @@ async def test_full_citizen_to_volunteer_verification_flow(app_client):
     # 2. Citizen reports an incident (no image, text-only path)
     report = await app_client.post(
         "/api/v1/incidents",
-        data={
+        json={
             "category": "flood",
             "description": "Street flooding, water rising fast",
             "longitude": -122.4,
