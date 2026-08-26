@@ -39,13 +39,12 @@ class AuthService:
         user = UserDocument(
             full_name=full_name,
             email=email.lower(),
-            phone=phone,
+            phone=phone.strip() if phone and phone.strip() else None,
             hashed_password=hash_password(password),
             role=requested_role,
             volunteer_verified=(requested_role == UserRole.CITIZEN),
         )
         return await self.repo.insert(user)
-
     async def authenticate(self, email: str, password: str) -> tuple[str, str, UserDocument]:
         user = await self.repo.get_by_email(email)
         if user is None:
