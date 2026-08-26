@@ -53,6 +53,9 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# --- DEBUG: confirm what origins were actually parsed from env ---
+logger.info("CORS origins loaded: %r", settings.BACKEND_CORS_ORIGINS)
+
 # --- Middleware stack ---
 # NOTE: Starlette applies middleware in REVERSE order of registration
 # (last added = outermost = runs first). CORSMiddleware must be added
