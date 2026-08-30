@@ -3,10 +3,11 @@ Centralized application configuration.
 All values are sourced from environment variables (12-factor app style),
 with sane development defaults. Never hardcode secrets here.
 """
+import json
 from functools import lru_cache
 from typing import Optional
 
-from pydantic import Field, field_validator
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -27,14 +28,20 @@ class Settings(BaseSettings):
     PASSWORD_RESET_TOKEN_EXPIRE_MINUTES: int = 30
 
     # --- CORS ---
-    BACKEND_CORS_ORIGINS: list[str] = []
+    # Kept as a raw string (not list[str]) to avoid pydantic-settings'
+    # built-in JSON parsing of list-typed env vars, which throws a
+    # SettingsError before any custom validator gets a chance to run.
+    # Accepts either a comma-separated string or a JSON array string.
+    BACKEND_CORS_ORIGINS: str = ""
 
-    @field_validator("BACKEND_CORS_ORIGINS", mode="before")
-    @classmethod
-    def assemble_cors_origins(cls, v):
-        if isinstance(v, str) and not v.startswith("["):
-            return [i.strip() for i in v.split(",") if i.strip()]
-        return v
+    @property
+    def cors_origins_list(self) -> list[str]:
+        raw = self.BACKEND_CORS_ORIGINS.strip()
+        if not raw:
+            return []
+        if raw.startswith("["):
+            return json.loads(raw)
+        return [i.strip() for i in raw.split(",") if i.strip()]
 
     # --- MongoDB ---
     MONGODB_URI: str = Field(..., description="MongoDB Atlas connection string")

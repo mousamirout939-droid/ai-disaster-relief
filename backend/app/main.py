@@ -54,7 +54,7 @@ app = FastAPI(
 )
 
 # --- DEBUG: confirm what origins were actually parsed from env ---
-logger.info("CORS origins loaded: %r", settings.BACKEND_CORS_ORIGINS)
+logger.info("CORS origins loaded: %r", settings.cors_origins_list)
 
 # --- Middleware stack ---
 # NOTE: Starlette applies middleware in REVERSE order of registration
@@ -65,7 +65,7 @@ app.add_middleware(RequestContextMiddleware)
 app.add_middleware(RateLimitMiddleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[str(origin) for origin in settings.BACKEND_CORS_ORIGINS] or ["*"],
+    allow_origins=settings.cors_origins_list or ["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
